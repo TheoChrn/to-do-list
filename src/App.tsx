@@ -1,6 +1,8 @@
 import { useTaskContext } from "./Components/Context/TaskContext";
 import Button from "./Components/Button";
 import TaskItem from "./Components/Task/index";
+import { DndProvider } from "react-dnd";
+import { TouchBackend } from "react-dnd-touch-backend";
 
 export interface Task {
   id: number;
@@ -34,17 +36,21 @@ const App = () => {
       <div className="taskContainer">
         <h2>Task List</h2>
         <ul>
-          {taskToShow &&
-            taskToShow.map((task, index) => (
-              <TaskItem
-                index={index}
-                key={index}
-                item={task}
-                className={
-                  task.state === "todo" ? "task task--todo" : "task task--done"
-                }
-              />
-            ))}
+          <DndProvider backend={TouchBackend}>
+            {taskToShow &&
+              taskToShow.map((task, index) => (
+                <TaskItem
+                  index={index}
+                  key={index}
+                  item={task}
+                  className={
+                    task.state === "todo"
+                      ? "task task--todo"
+                      : "task task--done"
+                  }
+                />
+              ))}
+          </DndProvider>
         </ul>
       </div>
       <div className="buttonContainers">

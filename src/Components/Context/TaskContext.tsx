@@ -103,16 +103,19 @@ export const TaskContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const dragStart = (position: number) => {
+    console.log(position);
     dragItem.current = position;
+    console.log(dragItem.current);
   };
 
   const dragEnter = (position: number) => {
+    console.log(position);
     dragOverItem.current = position;
     console.log(dragItem.current);
   };
 
   const drop = (
-    e: React.DragEvent<HTMLLIElement> | React.TouchEvent<HTMLLIElement>
+    e: React.DragEvent<HTMLLIElement>
   ) => {
     e.preventDefault();
     const copyListItems = [...taskToShow];
