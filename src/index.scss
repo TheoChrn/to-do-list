@@ -4,6 +4,14 @@
 * {
   margin: 0;
   padding: 0;
+  transition:
+    background-color 500ms,
+    background-image 0.5s,
+    color 500ms,
+    border 500ms;
+}
+
+body {
   font-family: "Prompt", sans-serif;
 }
 
@@ -24,7 +32,6 @@ li {
   background-size: contain;
   height: 100vh;
   padding: 0 20px;
-
   & main {
     width: 100%;
     padding-top: 50px;
@@ -61,9 +68,6 @@ li {
         height: 60px;
         padding: 0 15px;
         width: 100%;
-
-        &::placeholder {
-        }
       }
     }
 
