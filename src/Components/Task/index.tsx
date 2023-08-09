@@ -1,7 +1,9 @@
 import { useTaskContext } from "../../Components/Context/TaskContext";
 import { Task } from "../../App";
 import Button from "../Button/index";
-import { useState } from "react";
+import { useDrag, useDrop } from "react-dnd/dist/hooks";
+import CheckMark from "../CheckMark";
+import Cross from "../Cross/index.jsx";
 
 type Item = {
   item: Task;
@@ -9,25 +11,39 @@ type Item = {
   index: number;
 };
 
+type draggedItem = {
+  index: number;
+};
+
 const TaskItem = ({ item, className, index }: Item) => {
-  const {
-    completeTask,
-    uncompleteTask,
-    deleteTask,
-    dragEnter,
-    dragStart,
-    drop,
-  } = useTaskContext();
+  const { completeTask, uncompleteTask, deleteTask, moveTask } =
+    useTaskContext();
+
+  const [{ isDragging }, drag] = useDrag({
+    type: "TASK",
+    item: { index },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
+  const [, drop] = useDrop({
+    accept: "TASK",
+    hover: (draggedItem: draggedItem) => {
+      if (draggedItem.index !== index) {
+        moveTask(draggedItem.index, index);
+        draggedItem.index = index;
+      }
+    },
+  });
 
   return (
     <li
+      ref={(node) => drag(drop(node))}
       className={className}
-      onDragStart={() => dragStart(index)}
-      onDragEnter={() => dragEnter(index)}
-      onDragEnd={drop}
-      draggable
+      style={{ opacity: isDragging ? 0.4 : 1 }}
     >
-      {item !== undefined && item.state === "todo" ? (
+      {item !== undefined && item.state === "Active" ? (
         <>
           <Button
             action={() => completeTask(item)}
@@ -42,12 +58,14 @@ const TaskItem = ({ item, className, index }: Item) => {
             action={() => uncompleteTask(item)}
             task={item}
             className="unCompleteBtn"
+            label={<CheckMark />}
           />
           <span>{item.title}</span>
           <Button
             action={() => deleteTask(item)}
             task={item}
             className="deleteBtn"
+            label={<Cross />}
           />
         </>
       )}

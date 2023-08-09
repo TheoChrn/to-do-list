@@ -1,5 +1,6 @@
 import { Task } from "App";
 import { reducer } from "../Reducer/TaskReducer";
+
 import {
   createContext,
   useContext,
@@ -7,11 +8,12 @@ import {
   useReducer,
   useEffect,
   ReactNode,
-  useRef,
 } from "react";
 
 interface TaskContext {
   taskToShow: Task[];
+  isActive: boolean | string;
+  setIsActive(value: string): void;
   setTaskToShow: (value: Task[]) => void;
   taskInputValue: string;
   setTaskInputValue: (value: string) => void;
@@ -21,10 +23,9 @@ interface TaskContext {
   deleteAllCompletedTasks: () => void;
   deleteTask: (task: Task) => void;
   filterCompletedTasks: () => void;
+  filterActiveTasks: () => void;
   showAllTasks: () => void;
-  dragStart: (position: number) => void;
-  dragEnter: (position: number) => void;
-  drop: (e: React.DragEvent<HTMLLIElement>) => void;
+  moveTask: (fromIndex: number, toIndex: number) => void;
 }
 
 const tasksList: Task[] = [];
@@ -32,6 +33,8 @@ const tasksList: Task[] = [];
 const TaskContext = createContext<TaskContext>({
   taskToShow: [],
   setTaskToShow: () => {},
+  isActive: false,
+  setIsActive: () => {},
   taskInputValue: "",
   setTaskInputValue: () => {},
   addTask: () => {},
@@ -40,95 +43,70 @@ const TaskContext = createContext<TaskContext>({
   deleteAllCompletedTasks: () => {},
   deleteTask: () => {},
   filterCompletedTasks: () => {},
+  filterActiveTasks: () => {},
   showAllTasks: () => {},
-  dragStart: () => {},
-  dragEnter: () => {},
-  drop: () => {},
+  moveTask: () => {},
 });
 
 export const TaskContextProvider = ({ children }: { children: ReactNode }) => {
   const [taskInputValue, setTaskInputValue] = useState<string>("");
   const [state, dispatch] = useReducer(reducer, { tasks: tasksList });
+  const [isActive, setIsActive] = useState("All");
   const [taskToShow, setTaskToShow] = useState<Task[]>(state.tasks);
-  const dragItem = useRef<number | null>(null);
-  const dragOverItem = useRef<number | null>(null);
 
   const addTask = () => {
     if (taskInputValue.trim() !== "") {
       const newTask = {
         id: Date.now(),
         title: taskInputValue,
-        state: "todo",
+        state: "Active",
       };
       dispatch({ type: "ADD_TASK", payload: newTask });
       setTaskInputValue("");
-      console.log(state);
     }
   };
 
   const completeTask = (task: Task) => {
-    task.state = "complete";
+    task.state = "Completed";
     dispatch({ type: "COMPLETE_TASK", payload: task });
   };
 
   const uncompleteTask = (task: Task) => {
-    task.state = "todo";
+    task.state = "Active";
     dispatch({ type: "UNCOMPLETE_TASK", payload: task });
   };
 
   const deleteAllCompletedTasks = () => {
     const completedTasks = state.tasks.filter(
-      (task) => task.state === "complete"
+      (task) => task.state !== "Completed"
     );
-    if (completedTasks.length !== 0) {
-      dispatch({ type: "DELETE_ALL_COMPLETED_TASKS", payload: completedTasks });
-    }
-    console.log("Aucune tâche à supprimer");
+    dispatch({ type: "DELETE_ALL_COMPLETED_TASKS", payload: completedTasks });
   };
 
   const deleteTask = (task: Task) => {
     dispatch({ type: "DELETE_TASK", payload: task });
   };
 
+  const filterActiveTasks = () => {
+    const filteredTasks = state.tasks.filter((task) => task.state === "Active");
+    setTaskToShow(filteredTasks);
+  };
+
   const filterCompletedTasks = () => {
-    const filteredTasks = taskToShow.filter(
-      (task) => task.state === "complete"
+    const filteredTasks = state.tasks.filter(
+      (task) => task.state === "Completed"
     );
-    if (filteredTasks.length !== 0) {
-      setTaskToShow(filteredTasks);
-    } else {
-      setTaskToShow(state.tasks);
-      return;
-    }
-  };
+    setTaskToShow(filteredTasks);
+    console.log(filteredTasks);
 
-  const dragStart = (position: number) => {
-    console.log(position);
-    dragItem.current = position;
-    console.log(dragItem.current);
-  };
-
-  const dragEnter = (position: number) => {
-    console.log(position);
-    dragOverItem.current = position;
-    console.log(dragItem.current);
-  };
-
-  const drop = (
-    e: React.DragEvent<HTMLLIElement>
-  ) => {
-    e.preventDefault();
-    const copyListItems = [...taskToShow];
-    console.log(copyListItems);
-    if (dragItem.current !== null && dragOverItem.current !== null) {
-      const dragItemContent = copyListItems[dragItem.current];
-      copyListItems.splice(dragItem.current, 1);
-      copyListItems.splice(dragOverItem.current, 0, dragItemContent);
-      dispatch({ type: "DROP", payload: copyListItems });
-    }
-    dragItem.current = null;
-    dragOverItem.current = null;
     console.log(taskToShow);
+  };
+
+  const moveTask = (fromIndex: number, toIndex: number) => {
+    const updatedTasks = [...taskToShow];
+    const movedTask = updatedTasks.splice(fromIndex, 1)[0];
+    updatedTasks.splice(toIndex, 0, movedTask);
+    setTaskToShow(updatedTasks);
   };
 
   const showAllTasks = () => {
@@ -136,7 +114,13 @@ export const TaskContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    setTaskToShow(state.tasks);
+    if (isActive === "Completed") {
+      setTaskToShow(state.tasks.filter((s) => s.state === "Completed"));
+    } else if (isActive === "Active") {
+      setTaskToShow(state.tasks.filter((s) => s.state === "Active"));
+    } else {
+      setTaskToShow([...state.tasks]);
+    }
   }, [state.tasks]);
 
   return (
@@ -145,6 +129,8 @@ export const TaskContextProvider = ({ children }: { children: ReactNode }) => {
         taskInputValue,
         setTaskInputValue,
         taskToShow,
+        isActive,
+        setIsActive,
         setTaskToShow,
         addTask,
         completeTask,
@@ -152,10 +138,9 @@ export const TaskContextProvider = ({ children }: { children: ReactNode }) => {
         deleteAllCompletedTasks,
         deleteTask,
         filterCompletedTasks,
+        filterActiveTasks,
         showAllTasks,
-        dragStart,
-        dragEnter,
-        drop,
+        moveTask,
       }}
     >
       {children}

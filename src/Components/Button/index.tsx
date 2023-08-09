@@ -1,25 +1,26 @@
 import { Task } from "App";
 
-type Button = {
+type ButtonProps = {
   task?: Task;
-  label?: string;
+  label?: string | JSX.Element;
   action: (task?: Task) => void;
   className?: string;
+  index?: number;
+  isActive?: boolean;
 };
 
-const Button = ({ task, label, action, className }: Button) => {
+const Button = ({ task, label, action, className, isActive }: ButtonProps) => {
+  const handleClick = () => {
+    task ? action(task) : action();
+  };
+
   return (
-    <>
-      {task !== undefined ? (
-        <button className={className} onClick={() => action(task)}>
-          {label}
-        </button>
-      ) : (
-        <button className={className} onClick={() => action()}>
-          {label}
-        </button>
-      )}
-    </>
+    <button
+      className={isActive ? `${className} ${className}--active` : className}
+      onClick={handleClick}
+    >
+      {label}
+    </button>
   );
 };
 
