@@ -34,20 +34,15 @@ export const reducer = (state: State, action: Action) => {
       tasksToDelete = Array.isArray(action.payload)
         ? action.payload.map((task) => task.id)
         : [action.payload.id];
-
       return {
         ...state,
         tasks: state.tasks.filter((task) => !tasksToDelete.includes(task.id)),
       };
     case "DELETE_ALL_COMPLETED_TASKS":
+      console.log(action);
       return {
         ...state,
-        tasks: state.tasks.filter((task) => task.state !== "complete"),
-      };
-    case "DROP":
-      return {
-        ...state,
-        tasks: Array.isArray(action.payload) ? action.payload : state.tasks,
+        tasks: state.tasks.filter((task) => task.state !== "Completed"),
       };
     default:
       return state;
