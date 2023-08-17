@@ -90,30 +90,31 @@ const App = () => {
               ))}
             <li></li>
           </ul>
-          <div>
+          <div className='buttons'>
             <span>
               {taskToShow.length != 0
                 ? `${taskToShow.length} items left`
                 : "No items left"}
             </span>
+            <div className="buttonContainers">
+              {taskToShow &&
+                buttons.map((button, index) => (
+                  <Button
+                    key={index}
+                    className={"filterButton"}
+                    isActive={activeButtonIndex === index}
+                    action={() => handleButtonClick(index)}
+                    label={button.label}
+                  />
+                ))}
+            </div>
             <Button
               action={deleteAllCompletedTasks}
               label={"Clear Completed"}
             />
           </div>
         </div>
-        <div className="buttonContainers">
-          {taskToShow &&
-            buttons.map((button, index) => (
-              <Button
-                key={index}
-                className={"filterButton"}
-                isActive={activeButtonIndex === index}
-                action={() => handleButtonClick(index)}
-                label={button.label}
-              />
-            ))}
-        </div>
+
         <span className="comment">Drag and drop to reorder list</span>
       </main>
     </div>
