@@ -4,6 +4,7 @@
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
   transition:
     background-color 500ms,
     background-image 0.5s,
@@ -136,32 +137,37 @@ li {
         }
       }
 
-      & div {
+      & .buttons {
+        position: relative;
         display: flex;
         justify-content: space-between;
         align-items: center;
         min-height: 60px;
         padding: 0 15px;
         border-radius: 0 0 5px 5px;
-      }
-    }
 
-    & .buttonContainers {
-      width: 100%;
-      height: 60px;
-      display: flex;
-      justify-self: flex-end;
-      gap: 10px;
-      justify-content: center;
-      border-radius: 5px;
+        & .buttonContainers {
+          display: flex;
+          justify-content: space-evenly;
+          bottom: -75px;
+          left: 0;
+          position: absolute;
+          width: 100%;
+          height: 60px;
+          justify-self: flex-end;
+          gap: 10px;
+          justify-content: center;
+          border-radius: 5px;
 
-      & .filterButton {
-        background-color: transparent;
-        padding: 10px 15px;
-        font-weight: bold;
+          & .filterButton {
+            background-color: transparent;
+            padding: 10px 15px;
+            font-weight: bold;
 
-        &--active {
-          color: $BrightBlue;
+            &--active {
+              color: $BrightBlue;
+            }
+          }
         }
       }
     }
@@ -281,8 +287,19 @@ li {
           }
         }
 
-        & div {
+        & .buttons {
           background-color: $VeryLightGray;
+
+          & .buttonContainers {
+            background-color: $VeryLightGray;
+
+            & .filterButton {
+              color: $LightDarkGrayishBlue;
+              &--active {
+                color: $BrightBlue;
+              }
+            }
+          }
 
           & span {
             color: $LightDarkGrayishBlue;
@@ -294,16 +311,6 @@ li {
         }
       }
 
-      & .buttonContainers {
-        background-color: $VeryLightGray;
-
-        & .filterButton {
-          color: $LightDarkGrayishBlue;
-          &--active {
-            color: $BrightBlue;
-          }
-        }
-      }
       & .comment {
         color: $LightDarkGrayishBlue;
       }
@@ -323,6 +330,23 @@ li {
 
     &--Light {
       background-image: url("./assets/images/bg-desktop-light.jpg");
+    }
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .App {
+    & main {
+      & .taskContainer {
+        & .buttons {
+          position: inherit;
+
+          & .buttonContainers {
+            width: 50%;
+            position: inherit;
+          }
+        }
+      }
     }
   }
 }

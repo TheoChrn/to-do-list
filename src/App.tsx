@@ -1,9 +1,7 @@
 import { useTaskContext } from "./Components/Context/TaskContext";
 import Button from "./Components/Button";
 import TaskItem from "./Components/Task/index";
-// @ts-ignore
-import { useDndScrolling } from "react-dnd-scrolling";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Sun from "./Components/Sun/index.jsx";
 import Moon from "./Components/Moon/index.jsx";
 
@@ -31,8 +29,6 @@ const App = () => {
     setActiveState,
   } = useTaskContext();
 
-  const ref = useRef<HTMLUListElement>(null);
-  useDndScrolling(ref);
   const [theme, setTheme] = useState<string>("Dark");
 
   const handleSetTheme = () => {
@@ -78,7 +74,7 @@ const App = () => {
           />
         </div>
         <div className="taskContainer">
-          <ul ref={ref} onTouchMove={(e) => e.preventDefault()}>
+          <ul onTouchMove={(e) => e.preventDefault()}>
             {taskToShow &&
               taskToShow.map((task, index) => (
                 <TaskItem
@@ -94,30 +90,31 @@ const App = () => {
               ))}
             <li></li>
           </ul>
-          <div>
+          <div className='buttons'>
             <span>
               {taskToShow.length != 0
                 ? `${taskToShow.length} items left`
                 : "No items left"}
             </span>
+            <div className="buttonContainers">
+              {taskToShow &&
+                buttons.map((button, index) => (
+                  <Button
+                    key={index}
+                    className={"filterButton"}
+                    isActive={activeButtonIndex === index}
+                    action={() => handleButtonClick(index)}
+                    label={button.label}
+                  />
+                ))}
+            </div>
             <Button
               action={deleteAllCompletedTasks}
               label={"Clear Completed"}
             />
           </div>
         </div>
-        <div className="buttonContainers">
-          {taskToShow &&
-            buttons.map((button, index) => (
-              <Button
-                key={index}
-                className={"filterButton"}
-                isActive={activeButtonIndex === index}
-                action={() => handleButtonClick(index)}
-                label={button.label}
-              />
-            ))}
-        </div>
+
         <span className="comment">Drag and drop to reorder list</span>
       </main>
     </div>
