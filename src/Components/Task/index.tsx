@@ -4,6 +4,7 @@ import Button from "../Button/index";
 import { useDrag, useDrop } from "react-dnd/dist/hooks";
 import CheckMark from "../CheckMark";
 import Cross from "../Cross/index.jsx";
+import { useState } from "react";
 
 type Item = {
   item: Task;
@@ -18,10 +19,12 @@ type draggedItem = {
 const TaskItem = ({ item, className, index }: Item) => {
   const { completeTask, uncompleteTask, deleteTask, moveTask } =
     useTaskContext();
+  const [touchStartTime, setTouchStartTime] = useState(0);
 
   const [{ isDragging }, drag] = useDrag({
     type: "TASK",
     item: { index },
+    canDrag: () => Math.floor(Date.now() - touchStartTime) > 30,
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -37,11 +40,16 @@ const TaskItem = ({ item, className, index }: Item) => {
     },
   });
 
+  const handleTouchStart = () => {
+    setTouchStartTime(Date.now());
+  };
+
   return (
     <li
       ref={(node) => drag(drop(node))}
       className={className}
       style={{ opacity: isDragging ? 0.4 : 1 }}
+      onTouchStart={handleTouchStart}
     >
       {item !== undefined && item.state === "Active" ? (
         <>

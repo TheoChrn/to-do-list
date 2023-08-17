@@ -1,7 +1,7 @@
 import { useTaskContext } from "./Components/Context/TaskContext";
 import Button from "./Components/Button";
 import TaskItem from "./Components/Task/index";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Sun from "./Components/Sun/index.jsx";
 import Moon from "./Components/Moon/index.jsx";
 
@@ -30,6 +30,7 @@ const App = () => {
   } = useTaskContext();
 
   const [theme, setTheme] = useState<string>("Dark");
+  const containerRef = useRef(null);
 
   const handleSetTheme = () => {
     theme === "Dark" ? setTheme("Light") : setTheme("Dark");
@@ -74,7 +75,7 @@ const App = () => {
           />
         </div>
         <div className="taskContainer">
-          <ul onTouchMove={(e) => e.preventDefault()}>
+          <ul ref={containerRef}>
             {taskToShow &&
               taskToShow.map((task, index) => (
                 <TaskItem
@@ -88,9 +89,8 @@ const App = () => {
                   }
                 />
               ))}
-            <li></li>
           </ul>
-          <div className='buttons'>
+          <div className="buttons">
             <span>
               {taskToShow.length != 0
                 ? `${taskToShow.length} items left`
