@@ -12,8 +12,8 @@ import {
 
 interface TaskContext {
   taskToShow: Task[];
-  isActive: boolean | string;
-  setIsActive(value: string): void;
+  activeState: boolean | string;
+  setActiveState(value: string): void;
   setTaskToShow: (value: Task[]) => void;
   taskInputValue: string;
   setTaskInputValue: (value: string) => void;
@@ -33,8 +33,8 @@ const tasksList: Task[] = [];
 const TaskContext = createContext<TaskContext>({
   taskToShow: [],
   setTaskToShow: () => {},
-  isActive: false,
-  setIsActive: () => {},
+  activeState: false,
+  setActiveState: () => {},
   taskInputValue: "",
   setTaskInputValue: () => {},
   addTask: () => {},
@@ -51,7 +51,7 @@ const TaskContext = createContext<TaskContext>({
 export const TaskContextProvider = ({ children }: { children: ReactNode }) => {
   const [taskInputValue, setTaskInputValue] = useState<string>("");
   const [state, dispatch] = useReducer(reducer, { tasks: tasksList });
-  const [isActive, setIsActive] = useState("All");
+  const [activeState, setActiveState] = useState("All");
   const [taskToShow, setTaskToShow] = useState<Task[]>(state.tasks);
 
   const addTask = () => {
@@ -114,9 +114,9 @@ export const TaskContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    if (isActive === "Completed") {
+    if (activeState === "Completed") {
       setTaskToShow(state.tasks.filter((s) => s.state === "Completed"));
-    } else if (isActive === "Active") {
+    } else if (activeState === "Active") {
       setTaskToShow(state.tasks.filter((s) => s.state === "Active"));
     } else {
       setTaskToShow([...state.tasks]);
@@ -129,8 +129,8 @@ export const TaskContextProvider = ({ children }: { children: ReactNode }) => {
         taskInputValue,
         setTaskInputValue,
         taskToShow,
-        isActive,
-        setIsActive,
+        activeState,
+        setActiveState,
         setTaskToShow,
         addTask,
         completeTask,

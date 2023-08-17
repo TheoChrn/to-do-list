@@ -16,7 +16,6 @@ export interface Task {
 interface ButtonParams {
   label: string;
   action: () => void;
-  data: Task[];
 }
 
 const App = () => {
@@ -29,8 +28,7 @@ const App = () => {
     filterCompletedTasks,
     filterActiveTasks,
     showAllTasks,
-    isActive,
-    setIsActive,
+    setActiveState,
   } = useTaskContext();
 
   const ref = useRef<HTMLUListElement>(null);
@@ -42,16 +40,14 @@ const App = () => {
   };
 
   const buttons: ButtonParams[] = [
-    { label: "All", action: showAllTasks, data: taskToShow },
+    { label: "All", action: showAllTasks },
     {
       label: "Active",
       action: filterActiveTasks,
-      data: taskToShow.filter((task) => task.state === "Active"),
     },
     {
       label: "Completed",
       action: filterCompletedTasks,
-      data: taskToShow.filter((task) => task.state === "Completed"),
     },
   ];
 
@@ -59,9 +55,8 @@ const App = () => {
 
   const handleButtonClick = (index: number) => {
     buttons[index].action();
-    setIsActive(buttons[index].label);
+    setActiveState(buttons[index].label);
     setActiveButtonIndex(index);
-    console.log(isActive);
   };
 
   return (
